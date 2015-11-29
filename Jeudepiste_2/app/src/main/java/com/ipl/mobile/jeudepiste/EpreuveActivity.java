@@ -47,7 +47,6 @@ public class EpreuveActivity extends Activity {
 
         final ChargerXML xml = new ChargerXML(this);
 
-        //final HashMap<String, Object> map = null; //TODO a changer des que ChargerXML est correct
         final HashMap<String, Object> map = xml.getEpreuvePreference();
 
         final String typeQuestion = (String) map.get(Util.type);
@@ -108,7 +107,6 @@ public class EpreuveActivity extends Activity {
                     loc2.setLongitude((double) ((HashMap) map.get(Util.zone)).get((Util.longitude)));
 
                     ok = loc1.distanceTo(loc2) <= (int) ((HashMap) map.get(Util.zone)).get(Util.rayon);
-                    //TODO verifier que la photo a été prise au bon endroit + autres verifs?
                 }
                 SharedPreferences.Editor ed = settings.edit();
                 ed.putInt(Util.epreuve, settings.getInt(Util.epreuve, 1) + 1);
