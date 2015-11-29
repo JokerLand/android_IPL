@@ -103,13 +103,16 @@ public class EpreuveActivity extends Activity {
                 SharedPreferences.Editor ed = settings.edit();
                 ed.putInt(Util.epreuve, settings.getInt(Util.epreuve, 1) + 1);
                 if (ok) {
-                    int points = 0; //TODO A FAIRE
-                    int score = settings.getInt(Util.score, 0) + points;
-                    ed.putInt(Util.score, score); //TODO peut ajouter les scores pour chaque etape
-                    ed.putInt(Util.score + settings.getInt(Util.etape, 1), settings.getInt(Util.score + settings.getInt(Util.etape, 1), 0) + score);
-                    textReponse.setText("Vous avez réussi la question. Votre score est de " + score +". Vous avez gagné " + points + " grace a cette question");
+                    float proportion = ((float) settings.getLong(Util.time, Util.ONE_HOUR)) / Util.ONE_HOUR;
+                    int pts = (int) map.get(Util.points);
+                    float points = pts * proportion; // calcul des points gagnés pour cette épreuve
+                    float score = settings.getFloat(Util.score, 0) + points; //score total
+                    ed.putFloat(Util.score, score);
+                    float scoreEtape = settings.getFloat(Util.score + settings.getInt(Util.etape, 1), 0) +points; //score de l etape
+                    ed.putFloat(Util.score + settings.getInt(Util.etape, 1), scoreEtape);
+                    textReponse.setText("Vous avez réussi la question. Votre score est de " + score +". Pout cette étape vous avez " + scoreEtape + " points. Vous avez gagné " + points + " points grace a cette question.");
                 } else {
-                    textReponse.setText("Vous avez raté la question. Votre score est de " + settings.getInt(Util.score, 0));
+                    textReponse.setText("Vous avez raté la question. Votre score est de " + settings.getFloat(Util.score, 0));
                 }
                 ed.commit();
                 if(settings.getInt(Util.epreuve, 1) > (Integer) xml.getEtape(settings.getInt(Util.etape, 1)).get(Util.nombreEpreuves)) {
