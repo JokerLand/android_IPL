@@ -56,6 +56,8 @@ public class AccueilActivity extends Activity {
     private LocationManager lm;
     private LocationListener ll;
 
+    private CountDownTimer timer;
+
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
     private double latitude;
@@ -70,12 +72,13 @@ public class AccueilActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accueil);
 
-        //charger les préférence
-        //TODO
         myXml = new ChargerXML(this);
         settings = getSharedPreferences(Util.preferences, Context.MODE_PRIVATE);
         int numEtape = settings.getInt(Util.etape, 0);
         int numEpreuve = settings.getInt(Util.epreuve, 0);
+
+        //gestion du timer
+        timer = getTimer();
 
         if (numEtape == 0 && numEpreuve == 0) {
             etat = COMMENCE;
@@ -83,7 +86,7 @@ public class AccueilActivity extends Activity {
             etat = REPRENDRE;
         }
 
-        faireLaLocalisation(0,START_GEO);
+        faireLaLocalisation(0, START_GEO);
 
         final Button button = (Button) findViewById(R.id.button);
         button.setVisibility(View.VISIBLE);
@@ -108,6 +111,8 @@ public class AccueilActivity extends Activity {
                 @Override
 
                 public void onClick(View v) {
+                    timer.start();
+                    findViewById(R.id.timer).setVisibility(View.VISIBLE);
                     button.setVisibility(View.INVISIBLE);
                     etat = EN_COURS;
                     chargerWebView();
@@ -127,12 +132,11 @@ public class AccueilActivity extends Activity {
             @Override
             public void onLoadResource(WebView view, String url) {
 
-                if(url.contains("epreuve" + settings.getInt(Util.epreuve, 1))) {
+                if (url.contains("epreuve" + settings.getInt(Util.epreuve, 1))) {
                     view.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(AccueilActivity.this, EpreuveActivity.class);
                     startActivity(intent);
                 } else {
-                    System.out.println("url 14 : " + url.charAt(14));
                     int numEpreuveVoulue = Integer.parseInt("" + url.charAt(14));
                     int numEpreuveAFaire = settings.getInt(Util.epreuve, 1);
 
@@ -149,10 +153,44 @@ public class AccueilActivity extends Activity {
             }
         });
 
+        Button recommencer = (Button) findViewById(R.id.recommencer);
+        recommencer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor ed = settings.edit();
+                ed.putInt(Util.etape, 0);
+                ed.putInt(Util.epreuve, 0);
+                ed.putFloat(Util.score, 0);
+                for(int i = 0; i<myXml.getNbEtapes(); i++)
+                    ed.putFloat(Util.score+i, 0);
+                ed.putLong(Util.time, Util.ONE_HOUR);
+                ed.commit();
+
+                Button b = (Button) findViewById(R.id.button);
+                b.setVisibility(View.VISIBLE);
+
+                TextView zone = (TextView) findViewById(R.id.textViewZone);
+                zone.setVisibility(View.INVISIBLE);
+                Button boutonRecommencer = (Button) findViewById(R.id.recommencer);
+                boutonRecommencer.setVisibility(View.INVISIBLE);
+
+                TextView titre = (TextView) findViewById(R.id.idTitre);
+                titre.setVisibility(View.VISIBLE);
+
+                timer = getTimer();
+                etat = COMMENCE;
+            }
+        });
+    }
+
+    //final Button buttonRep = (Button) findViewById(R.id.buttonRep);
+    //button.setVisibility(View.INVISIBLE);
+
+
+    private CountDownTimer getTimer() {
         final TextView timerText = (TextView) findViewById(R.id.timer);
 
-        CountDownTimer timer = new CountDownTimer(settings.getLong(Util.time, Util.ONE_HOUR), Util.ONE_SECOND) { //TODO a changer mettre 1h au lieu de 1min //settings.getLong("time", Util.ONE_HOUR);
-
+        return new CountDownTimer(settings.getLong(Util.time, Util.ONE_HOUR), Util.ONE_SECOND) {
             @Override
             public void onTick(long millisUntilFinished) {
                 long sec = millisUntilFinished/1000;
@@ -172,19 +210,7 @@ public class AccueilActivity extends Activity {
                 verifContenu(); //mise a jour de la page et fin du jeu
             }
         };
-
-        timer.start();
-
-        Button recommencer = (Button) findViewById(R.id.recommencer);
-        //TODO finir
     }
-
-
-
-
-    //final Button buttonRep = (Button) findViewById(R.id.buttonRep);
-    //button.setVisibility(View.INVISIBLE);
-
 
     @TargetApi(Build.VERSION_CODES.M)
     private void faireLaLocalisation(long time, int mode) {
@@ -270,6 +296,10 @@ public class AccueilActivity extends Activity {
 
     private void chargerWebView() {
 
+        if(settings.getInt(Util.etape, 1) == 0) { //Quand on recommence, le numero d etape et d epreuve est a 0 alors que quand on commence en partant de rien ils sont non définis (cela pose probleme ici et plus tard dans le programme)
+            settings.edit().putInt(Util.etape, 1).commit();
+            settings.edit().putInt(Util.epreuve, 1).commit();
+        }
         String myUrl = (String) myXml.getEtape(settings.getInt(Util.etape,1)).get(Util.url);
 
         webview.setVisibility(View.VISIBLE);
@@ -299,6 +329,8 @@ public class AccueilActivity extends Activity {
 
     private void verifContenu() {
         if(myXml.getNbEtapes() + 1 == settings.getInt(Util.etape, 1)) {
+            timer.cancel();
+
             TextView timerText = (TextView) findViewById(R.id.timer);
             timerText.setVisibility(View.INVISIBLE);
             TextView titre = (TextView) findViewById(R.id.idTitre);
@@ -317,13 +349,20 @@ public class AccueilActivity extends Activity {
             long sec = time % 60;
 
             float score = settings.getFloat(Util.score, 0);
-            float bestScore = settings.getFloat(Util.bestScore, -1);
+            float bestScore = settings.getFloat(Util.bestScore, 0);
             String texte = "Vous avez fini ! Bravo ! Votre score final est de " + score + ". Vous avez mis " + min +"minutes " + sec +"secondes pour finir le jeu";
             if(score > bestScore) {
-                texte = texte +"\nBravo vous avez batu votre meilleur score qui etait de " + bestScore;
+                if(bestScore != 0)
+                    texte = texte +"\nBravo vous avez battu votre meilleur score qui etait de " + bestScore;
+                SharedPreferences.Editor ed = settings.edit();
+                ed.putFloat(Util.bestScore, score);
+                ed.commit();
             }
 
             zone.setText(texte);
+
+            Button boutonRecommencer = (Button) findViewById(R.id.recommencer);
+            boutonRecommencer.setVisibility(View.VISIBLE);
         }
         verifLocation();
     }
