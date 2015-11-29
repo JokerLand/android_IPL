@@ -4,7 +4,7 @@
 		<Zone>
 			<Longitude>50.846778</Longitude>
 			<Latitude>4.352436</Latitude>
-			<Rayon>1000000</Rayon>
+			<Rayon>5000000</Rayon>
 		</Zone>
 		<Epreuves >
 			<Epreuve uri="http://epreuve1.jeux-piste.mobile.ipl.be" type="Texte" points="6">
@@ -23,7 +23,7 @@
 		<Zone>
 			<Longitude>50.844959</Longitude>
 			<Latitude>4.349845</Latitude>
-			<Rayon>10000000</Rayon>
+			<Rayon>5000000</Rayon>
 		</Zone>
 		<Epreuves>
 			<Epreuve uri="http://epreuve1.jeux-piste.mobile.ipl.be" type="Photo" points="4">
@@ -31,7 +31,7 @@
 				<Zone>
 					<Longitude>50.844959</Longitude>
 					<Latitude>4.349845</Latitude>
-					<Rayon>1000000</Rayon>
+					<Rayon>5000000</Rayon>
 				</Zone>
 			</Epreuve>
 		</Epreuves>
@@ -40,7 +40,7 @@
 		<Zone>
 			<Longitude>50.844715</Longitude>
 			<Latitude>4.363695</Latitude>
-			<Rayon>1000000</Rayon>
+			<Rayon>5000000</Rayon>
 		</Zone>
 		<Epreuves>
 			<Epreuve uri="http://epreuve1.jeux-piste.mobile.ipl.be" type="QCM" points="6">
@@ -55,7 +55,7 @@
 		<Zone>
 			<Longitude>50.840775</Longitude>
 			<Latitude>4.391503</Latitude>
-			<Rayon>1000000</Rayon>
+			<Rayon>500000</Rayon>
 		</Zone>
 		<Epreuves>
 			<Epreuve uri="http://epreuve1.jeux-piste.mobile.ipl.be" type="Texte" points="4">

@@ -9,13 +9,13 @@ public class Util {
 
     public final static String etape = "etape";
     public final static String epreuve = "epreuve";
-    public final static String nombreEtapes = "nombreEtapes";
 
     public final static String QCM = "QCM";
     public final static String photo = "Photo";
     public final static String texte = "Texte";
 
     public final static String nombreEpreuves  = "nombreEpreuves";
+    public final static String nombreEtapes = "nombreEtapes";
     public final static String num = "num";
     public final static String url = "url";
     public final static String type = "type";
@@ -23,7 +23,6 @@ public class Util {
     public final static String points = "points";
     public final static String score = "score";
     public final static String uri = "uri";
-
 
     public final static String reponse = "reponse";
     public final static String reponse1 = "reponse1";
@@ -47,7 +46,7 @@ public class Util {
     public final static int THIRTY_SECONDS = 1000 *30;
     public final static int ONE_SECOND = 1000 * 1;
     public static final long FIVE_SECONDS = 1000 * 5 ;
-
+    public static final int ONE_HOUR = 1000 * 60 * 60;
 
 
     /** Determines whether one Location reading is better than the current Location fix

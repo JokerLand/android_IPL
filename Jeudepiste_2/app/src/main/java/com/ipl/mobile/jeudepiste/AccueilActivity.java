@@ -13,6 +13,7 @@ import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -28,19 +29,13 @@ import com.ipl.mobile.jeudepiste.util.Util;
 import java.util.HashMap;
 
 public class AccueilActivity extends Activity {
-    private static final int START_GEO = 1;
-    private static final int STOP_GEO = 2;
-    private static final int CHANGE_TIME_REFRESH_GEO = 3;
     private int etat;
     public static final int COMMENCE = 1;
     public static final int REPRENDRE = 2;
-    public static final int EN_COURS = 3;
     private WebView webview;
     private SharedPreferences settings;
     public static Location bestLocation;
     private ChargerXML myXml;
-    private LocationManager lm;
-    private LocationListener ll;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
@@ -67,30 +62,12 @@ public class AccueilActivity extends Activity {
             etat = COMMENCE;
         }
 
-        faireLaLocalisation(0,START_GEO);
+        faireLaLocalisation();
 
         final Button button = (Button) findViewById(R.id.button);
         button.setVisibility(View.VISIBLE);
         webview = (WebView) findViewById(R.id.webviewAccueil);
         webview.setVisibility(View.INVISIBLE);
-        webview.setWebViewClient(new WebViewClient() {
-            // you tell the webclient you want to catch when a url is about to load
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-
-            // here you execute an action when the URL you want is about to load
-            @Override
-            public void onLoadResource(WebView view, String url) {
-                if (url.equals(myXml.getEpreuvePreference().get(Util.uri) + "/")) {
-                    Intent intent = new Intent(AccueilActivity.this, EpreuveActivity.class);
-                    startActivity(intent);
-
-                }
-
-            }
-        });
 
         if (etat == REPRENDRE) {
             button.setText("REPRENDRE");
@@ -98,7 +75,6 @@ public class AccueilActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     button.setVisibility(View.INVISIBLE);
-                    etat = EN_COURS;
                     reprendre();
                 }
 
@@ -111,14 +87,53 @@ public class AccueilActivity extends Activity {
 
                 public void onClick(View v) {
                     button.setVisibility(View.INVISIBLE);
-                    etat = EN_COURS;
                     chargerWebView();
 
                 }
             });
         }
 
+        webview.setWebViewClient(new WebViewClient() {
+            // you tell the webclient you want to catch when a url is about to load
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
 
+            // here you execute an action when the URL you want is about to load
+            @Override
+            public void onLoadResource(WebView view, String url) {
+
+                if (url.equals(myXml.getEpreuvePreference().get(Util.uri) + "/")) {
+                    Intent intent = new Intent(AccueilActivity.this, EpreuveActivity.class);
+                    startActivity(intent);
+                }
+
+            }
+        });
+
+        final TextView timerText = (TextView) findViewById(R.id.timer);
+
+        CountDownTimer timer = new CountDownTimer(Util.TWO_MINUTES / 12, Util.ONE_SECOND) { //TODO a changer mettre 1h au lieu de 1min //settings.getLong("time", Util.ONE_HOUR);
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                timerText.setText("" + (millisUntilFinished / 1000));
+                SharedPreferences.Editor ed = settings.edit();
+                ed.putLong("time", millisUntilFinished);
+                ed.commit();
+            }
+
+            @Override
+            public void onFinish() {
+                SharedPreferences.Editor ed = settings.edit();
+                ed.putInt(Util.etape, myXml.getNbEtapes() + 1);
+                ed.commit();
+                verifContenu(); //mise a jour de la page et fin du jeu
+            }
+        };
+
+        timer.start();
     }
 
     private void reprendre() {
@@ -126,11 +141,7 @@ public class AccueilActivity extends Activity {
         int numEpreuve = settings.getInt(Util.epreuve, 0);
 
         //Normalement, numEtape et numEpreuve sont différent de 0
-        if (numEtape == 0 && numEpreuve == 0) {
-            chargerWebView();
-            return;
-        }
-
+        if(numEtape == 0 && numEpreuve == 0) { chargerWebView(); return; }
 
     }
 
@@ -140,12 +151,10 @@ public class AccueilActivity extends Activity {
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void faireLaLocalisation(long time, int mode) {
+    private void faireLaLocalisation() {
 
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ll == null) ll = new MyLocationListener();
-
-
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationListener ll = new MyLocationListener();
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
@@ -164,9 +173,9 @@ public class AccueilActivity extends Activity {
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-               /* ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);*/
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
                 Toast.makeText(AccueilActivity.this, "Bouuuuhhhh", Toast.LENGTH_LONG).show(); //TODO message erreur correct
             } else {
 
@@ -180,42 +189,12 @@ public class AccueilActivity extends Activity {
 
             return;
         }
-
-
-        switch (mode) {
-            case START_GEO:
-                Location lastKnownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-                if (lastKnownLocation != null) {
-                    bestLocation = lastKnownLocation;
-                }
-                if (time >= 0) { // Valeur par défaut
-
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
-                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
-                } else {
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, 5, ll);
-                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, time, 5, ll);
-                }
-
-                break;
-            case STOP_GEO:
-                lm.removeUpdates(ll);
-
-                break;
-            case CHANGE_TIME_REFRESH_GEO:
-                lm.removeUpdates(ll);
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, 5, ll);
-                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, time, 5, ll);
-
-                break;
-
-            default : break;
-        }
-
         Location lastKnownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (lastKnownLocation != null) {
             bestLocation = lastKnownLocation;
         }
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
+        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
 
 
     }
@@ -223,9 +202,15 @@ public class AccueilActivity extends Activity {
 
     private void chargerWebView() {
 
-        String myUrl = (String) myXml.getEtape(settings.getInt(Util.etape, 1)).get(Util.url);
+        String myUrl = (String) myXml.getEtape(settings.getInt(Util.etape,1)).get(Util.url);
+
         webview.setVisibility(View.VISIBLE);
         webview.loadUrl(myUrl);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
 
 
     }
@@ -233,13 +218,30 @@ public class AccueilActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        faireLaLocalisation(Util.THIRTY_SECONDS,CHANGE_TIME_REFRESH_GEO);
+
+        verifContenu();
+    }
+
+    private void verifContenu() {
+        if(myXml.getNbEtapes() + 1 == settings.getInt(Util.etape, 1)) {
+            TextView timerText = (TextView) findViewById(R.id.timer);
+            timerText.setVisibility(View.INVISIBLE);
+            TextView titre = (TextView) findViewById(R.id.idTitre);
+            titre.setVisibility(View.INVISIBLE);
+            Button b = (Button) findViewById(R.id.button);
+            b.setVisibility(View.INVISIBLE);
+            webview.setVisibility(View.INVISIBLE);
+            TextView zone = (TextView) findViewById(R.id.textViewZone);
+            zone.setVisibility(View.VISIBLE);
+            zone.setText("Vous avez fini ! Bravo ! Votre score final est de " + settings.getInt(Util.score,0));
+        }
         verifLocation();
     }
 
     private void verifLocation() {
+        if(myXml.getNbEtapes() + 1 == settings.getInt(Util.etape, 1))
+            return;
 
-        if (etat != EN_COURS) return;
         Button b = (Button) findViewById(R.id.button);
         TextView t = (TextView) findViewById(R.id.textViewZone);
 
@@ -249,36 +251,20 @@ public class AccueilActivity extends Activity {
         double lon = (double) zone.get(Util.longitude);
         loc1.setLatitude(lat);
         loc1.setLongitude(lon);
-        if (bestLocation != null) {
-            if (loc1.distanceTo(bestLocation) <= (int) zone.get(Util.rayon)) {
-                t.setVisibility(View.INVISIBLE);
-                webview.setVisibility(View.VISIBLE);
-                b.setEnabled(true);
-                webview = (WebView) findViewById(R.id.webviewAccueil);
-                webview.loadUrl((String) myXml.getEtape(settings.getInt(Util.etape, 1)).get(Util.url));
-            } else {
+        if(loc1.distanceTo(bestLocation) <= (int) zone.get(Util.rayon)) {
+            t.setVisibility(View.INVISIBLE);
+            webview.setVisibility(View.VISIBLE);
+            b.setEnabled(true);
+            webview = (WebView) findViewById(R.id.webviewAccueil);
+            webview.loadUrl((String) myXml.getEtape(settings.getInt(Util.etape, 1)).get(Util.url));
+        } else {
 
-                t.setVisibility(View.VISIBLE);
-                webview.setVisibility(View.INVISIBLE);
-                b.setEnabled(false);
+            t.setVisibility(View.VISIBLE);
+            webview.setVisibility(View.INVISIBLE);
+            b.setEnabled(false);
 
-                t.setText("Vous n'êtes pas dans la zone de l'étape. Dirigez-vous vers les coordonnées suivantes : Latitude : " + lat + " Longitude : " + lon);
-            }
+            t.setText("Vous n'êtes pas dans la zone de l'étape. Dirigez-vous vers les coordonnées suivantes : Latitude : " + lat + " Longitude : " + lon);
         }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        faireLaLocalisation(Util.FIVE_MINUTES*2,CHANGE_TIME_REFRESH_GEO);
-
-
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        faireLaLocalisation(0,STOP_GEO);
     }
 
     private class MyLocationListener implements LocationListener {
@@ -288,6 +274,7 @@ public class AccueilActivity extends Activity {
 
 
             if (Util.isBetterLocation(location, bestLocation)) bestLocation = location;
+
             verifLocation();
         }
 
@@ -343,7 +330,7 @@ public class AccueilActivity extends Activity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
-                    faireLaLocalisation(0, START_GEO);
+                    faireLaLocalisation();
 
                 } else {
 

@@ -103,9 +103,11 @@ public class EpreuveActivity extends Activity {
                 SharedPreferences.Editor ed = settings.edit();
                 ed.putInt(Util.epreuve, settings.getInt(Util.epreuve, 1) + 1);
                 if (ok) {
-                    int score = settings.getInt(Util.score, 0) + (int) map.get(Util.points);
+                    int points = 0; //TODO A FAIRE
+                    int score = settings.getInt(Util.score, 0) + points;
                     ed.putInt(Util.score, score); //TODO peut ajouter les scores pour chaque etape
-                    textReponse.setText("Vous avez réussi la question. Votre score est de " + score);
+                    ed.putInt(Util.score + settings.getInt(Util.etape, 1), settings.getInt(Util.score + settings.getInt(Util.etape, 1), 0) + score);
+                    textReponse.setText("Vous avez réussi la question. Votre score est de " + score +". Vous avez gagné " + points + " grace a cette question");
                 } else {
                     textReponse.setText("Vous avez raté la question. Votre score est de " + settings.getInt(Util.score, 0));
                 }
