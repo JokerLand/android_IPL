@@ -171,6 +171,9 @@ public class AccueilActivity extends Activity {
         };
 
         timer.start();
+
+        Button recommencer = (Button) findViewById(R.id.recommencer);
+        //TODO finir
     }
 
     private void reprendre() {
@@ -317,7 +320,14 @@ public class AccueilActivity extends Activity {
             long min = time / 60;
             long sec = time % 60;
 
-            zone.setText("Vous avez fini ! Bravo ! Votre score final est de " + settings.getFloat(Util.score,0) + ". Vous avez mis " + min +"minutes " + sec +"secondes pour finir le jeu");
+            float score = settings.getFloat(Util.score, 0);
+            float bestScore = settings.getFloat(Util.bestScore, -1);
+            String texte = "Vous avez fini ! Bravo ! Votre score final est de " + score + ". Vous avez mis " + min +"minutes " + sec +"secondes pour finir le jeu";
+            if(score > bestScore) {
+                texte = texte +"\nBravo vous avez batu votre meilleur score qui etait de " + bestScore;
+            }
+
+            zone.setText(texte);
         }
         verifLocation();
     }

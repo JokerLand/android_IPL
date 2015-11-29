@@ -11,4 +11,8 @@
     <string name="app_geoloc_new_location">Nouvelle localisation.  Lat=%1$s, Long=%2$s, Alt=%3$s avec une pr\écision de %4$s m\ètres</string>
     <string name="app_geoloc_val_now">Pas de données disponnibles.  Veuillez ré-essayer ultérieurement.</string>
     <string name="app_geoloc_print_title">Votre position actuelle est \:</string>
+    <string name="bouton_recommencer">Recommencer</string>
+    <string name="bouton_photo">Prendre une photo</string>
+    <string name="bouton_retour">Retour</string>
+    <string name="bouton_repondre">Répondre</string>
 </resources>

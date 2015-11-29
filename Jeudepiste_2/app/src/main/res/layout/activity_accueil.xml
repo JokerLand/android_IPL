@@ -16,10 +16,10 @@
         android:layout_centerHorizontal="true" />
 
     <Button
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Commencer"
-    android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Commencer"
+        android:id="@+id/button"
         android:layout_marginTop="80dp"
         android:layout_below="@+id/textViewZone"
         android:layout_centerHorizontal="true" />
@@ -47,13 +47,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/timer"
-        android:text="ici le timer"
         android:layout_alignTop="@+id/webviewAccueil"
         android:layout_alignRight="@+id/webviewAccueil"
         android:layout_alignEnd="@+id/webviewAccueil"
         android:layout_toRightOf="@+id/idTitre"
         android:layout_toEndOf="@+id/idTitre"
         android:layout_alignBottom="@+id/textViewZone" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/recommencer"
+        android:layout_below="@+id/button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="135dp"
+        android:visibility="invisible"
+        android:text="@string/bouton_recommencer"/>
 
 
 </RelativeLayout>

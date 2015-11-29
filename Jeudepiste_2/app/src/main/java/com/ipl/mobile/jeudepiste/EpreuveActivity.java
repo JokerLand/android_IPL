@@ -64,7 +64,6 @@ public class EpreuveActivity extends Activity {
         final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
 
         final Button boutonPhoto = (Button) findViewById(R.id.boutonPhoto);
-        boutonPhoto.setText("Prendre une photo");
         boutonPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,11 +84,9 @@ public class EpreuveActivity extends Activity {
         }
 
         final Button boutonFin = (Button) findViewById(R.id.boutonFin);
-        boutonFin.setText("Retour");
         final TextView textReponse = (TextView) findViewById(R.id.textResult);
 
         final Button boutonRepondre = (Button) findViewById(R.id.boutonRepondre);
-        boutonRepondre.setText("Répondre");
         boutonRepondre.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 question.setVisibility(View.INVISIBLE);

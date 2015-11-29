@@ -36,6 +36,7 @@ public class Util {
     public final static String question = "question";
     public final static String points = "points";
     public final static String score = "score";
+    public final static String bestScore = "bestScore";
     public final static String uri = "uri";
 
     public final static String reponse = "reponse";

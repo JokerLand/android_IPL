@@ -60,7 +60,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/boutonRepondre"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:text="@string/bouton_repondre"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -76,7 +77,8 @@
         android:id="@+id/boutonFin"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:text="@string/bouton_retour"/>
 
     <Button
         android:layout_width="wrap_content"
@@ -85,6 +87,7 @@
         android:layout_alignTop="@+id/radioGroup"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:text="@string/bouton_photo"/>
 
 </RelativeLayout>
