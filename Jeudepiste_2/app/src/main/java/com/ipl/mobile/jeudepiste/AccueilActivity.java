@@ -77,8 +77,10 @@ public class AccueilActivity extends Activity {
         int numEtape = settings.getInt(Util.etape, 0);
         int numEpreuve = settings.getInt(Util.epreuve, 0);
 
-        if (numEtape == 0) {
+        if (numEtape == 0 && numEpreuve == 0) {
             etat = COMMENCE;
+        } else {
+            etat = REPRENDRE;
         }
 
         faireLaLocalisation(0,START_GEO);
@@ -95,7 +97,7 @@ public class AccueilActivity extends Activity {
                 public void onClick(View v) {
                     button.setVisibility(View.INVISIBLE);
                     etat = EN_COURS;
-                    reprendre();
+                    chargerWebView();
                 }
 
             });
@@ -126,6 +128,7 @@ public class AccueilActivity extends Activity {
             public void onLoadResource(WebView view, String url) {
 
                 if(url.contains("epreuve" + settings.getInt(Util.epreuve, 1))) {
+                    view.setVisibility(View.INVISIBLE);
                     Intent intent = new Intent(AccueilActivity.this, EpreuveActivity.class);
                     startActivity(intent);
                 } else {
@@ -173,14 +176,7 @@ public class AccueilActivity extends Activity {
         timer.start();
     }
 
-    private void reprendre() {
-        int numEtape = settings.getInt(Util.etape, 0);
-        int numEpreuve = settings.getInt(Util.epreuve, 0);
 
-        //Normalement, numEtape et numEpreuve sont différent de 0
-        if(numEtape == 0 && numEpreuve == 0) { chargerWebView(); return; }
-
-    }
 
 
     //final Button buttonRep = (Button) findViewById(R.id.buttonRep);
