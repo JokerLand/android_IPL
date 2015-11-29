@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -365,13 +367,21 @@ public class Partage extends Activity {
     private void manageConnectedSocket(BluetoothSocket mmSocket) {
 
         settings = getSharedPreferences(Util.preferences, MODE_PRIVATE);
-
+        SharedPreferences.Editor ed = settings.edit();
         try {
-            //Byte.parseByte()
-            Byte.parseByte(""+settings.getInt(Util.bestScore,0));
+
+
             InputStream mInputStream = mmSocket.getInputStream();
             OutputStream mOutputStream = mmSocket.getOutputStream();
 
+
+
+            byte[] bytes = { };
+            mInputStream.read(bytes);
+            float f = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+
+
+            mOutputStream.write(Byte.parseByte(""+settings.getInt(Util.bestScore,0)));
 
 
         } catch (IOException e) {
