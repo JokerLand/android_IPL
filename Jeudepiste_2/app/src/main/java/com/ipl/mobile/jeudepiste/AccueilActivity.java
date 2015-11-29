@@ -29,13 +29,19 @@ import com.ipl.mobile.jeudepiste.util.Util;
 import java.util.HashMap;
 
 public class AccueilActivity extends Activity {
+    private static final int START_GEO = 1;
+    private static final int STOP_GEO = 2;
+    private static final int CHANGE_TIME_REFRESH_GEO = 3;
     private int etat;
     public static final int COMMENCE = 1;
     public static final int REPRENDRE = 2;
+    public static final int EN_COURS = 3;
     private WebView webview;
     private SharedPreferences settings;
     public static Location bestLocation;
     private ChargerXML myXml;
+    private LocationManager lm;
+    private LocationListener ll;
 
     public static final int MY_PERMISSIONS_REQUEST_FINE_LOCATION = 1;
 
@@ -62,7 +68,7 @@ public class AccueilActivity extends Activity {
             etat = COMMENCE;
         }
 
-        faireLaLocalisation();
+        faireLaLocalisation(0,START_GEO);
 
         final Button button = (Button) findViewById(R.id.button);
         button.setVisibility(View.VISIBLE);
@@ -151,10 +157,12 @@ public class AccueilActivity extends Activity {
 
 
     @TargetApi(Build.VERSION_CODES.M)
-    private void faireLaLocalisation() {
+    private void faireLaLocalisation(long time, int mode) {
 
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        LocationListener ll = new MyLocationListener();
+        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ll == null) ll = new MyLocationListener();
+
+
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    public void requestPermissions(@NonNull String[] permissions, int requestCode)
@@ -173,9 +181,9 @@ public class AccueilActivity extends Activity {
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                ActivityCompat.requestPermissions(this,
+               /* ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);*/
                 Toast.makeText(AccueilActivity.this, "Bouuuuhhhh", Toast.LENGTH_LONG).show(); //TODO message erreur correct
             } else {
 
@@ -189,12 +197,42 @@ public class AccueilActivity extends Activity {
 
             return;
         }
+
+
+        switch (mode) {
+            case START_GEO:
+                Location lastKnownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+                if (lastKnownLocation != null) {
+                    bestLocation = lastKnownLocation;
+                }
+                if (time >= 0) { // Valeur par défaut
+
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
+                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
+                } else {
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, 5, ll);
+                    lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, time, 5, ll);
+                }
+
+                break;
+            case STOP_GEO:
+                lm.removeUpdates(ll);
+
+                break;
+            case CHANGE_TIME_REFRESH_GEO:
+                lm.removeUpdates(ll);
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, time, 5, ll);
+                lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, time, 5, ll);
+
+                break;
+
+            default : break;
+        }
+
         Location lastKnownLocation = lm.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (lastKnownLocation != null) {
             bestLocation = lastKnownLocation;
         }
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
-        lm.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, Util.THIRTY_SECONDS, 5, ll);
 
 
     }
@@ -209,16 +247,23 @@ public class AccueilActivity extends Activity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
+        faireLaLocalisation(Util.FIVE_MINUTES*2,CHANGE_TIME_REFRESH_GEO);
 
 
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        faireLaLocalisation(0, STOP_GEO);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-
+        faireLaLocalisation(Util.THIRTY_SECONDS, CHANGE_TIME_REFRESH_GEO);
         verifContenu();
     }
 
@@ -251,7 +296,8 @@ public class AccueilActivity extends Activity {
         double lon = (double) zone.get(Util.longitude);
         loc1.setLatitude(lat);
         loc1.setLongitude(lon);
-        if(loc1.distanceTo(bestLocation) <= (int) zone.get(Util.rayon)) {
+
+        if(bestLocation != null && loc1.distanceTo(bestLocation) <= (int) zone.get(Util.rayon)) {
             t.setVisibility(View.INVISIBLE);
             webview.setVisibility(View.VISIBLE);
             b.setEnabled(true);
@@ -330,7 +376,7 @@ public class AccueilActivity extends Activity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
 
-                    faireLaLocalisation();
+                    faireLaLocalisation(0, START_GEO);
 
                 } else {
 
