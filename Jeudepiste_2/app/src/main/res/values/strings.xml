@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Jeu de piste</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_epreuve">EpreuveActivity</string>
+    <string name="title_activity_test">Test</string>
+    <string name="app_geoloc_provider_enabled">Le point d\'acc\ès %s est activ\é</string>
+    <string name="app_geoloc_provider_disabled">Le point d\'acc\ès %s est d\ésactiv\é</string>
+    <string name="app_geoloc_provider_new_status">Le point d\'acc\ès %1$s a un nouveau statut %2$s</string>
+    <string name="app_geoloc_new_location">Nouvelle localisation.  Lat=%1$s, Long=%2$s, Alt=%3$s avec une pr\écision de %4$s m\ètres</string>
+    <string name="app_geoloc_val_now">Pas de données disponnibles.  Veuillez ré-essayer ultérieurement.</string>
+    <string name="app_geoloc_print_title">Votre position actuelle est \:</string>
+</resources>
