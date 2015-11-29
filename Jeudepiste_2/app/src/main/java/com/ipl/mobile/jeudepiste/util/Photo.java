@@ -1,3 +1,11 @@
+
+/*
+ * Android Code
+ * Copyright 2005-2008 The Android Open Source Project
+ * This product includes software developed as part of
+ * The Android Open Source Project (http://source.android.com).
+ */
+
 package com.ipl.mobile.jeudepiste.util;
 
 import android.app.Activity;
@@ -11,10 +19,6 @@ import android.util.Log;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-/**
- * Created by JokerLand on 25-11-15.
- */
 public class Photo {
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private Uri fileUri;
