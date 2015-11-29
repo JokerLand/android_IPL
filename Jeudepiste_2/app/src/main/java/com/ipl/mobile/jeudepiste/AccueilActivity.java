@@ -90,6 +90,9 @@ public class AccueilActivity extends Activity {
 
         final Button button = (Button) findViewById(R.id.button);
         button.setVisibility(View.VISIBLE);
+
+        final Button partage  = (Button) findViewById(R.id.partageId);
+        partage.setVisibility(View.VISIBLE);
         webview = (WebView) findViewById(R.id.webviewAccueil);
         webview.setVisibility(View.INVISIBLE);
 
@@ -99,6 +102,7 @@ public class AccueilActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     button.setVisibility(View.INVISIBLE);
+                    partage.setVisibility(View.INVISIBLE);
                     etat = EN_COURS;
                     chargerWebView();
                 }
@@ -114,6 +118,7 @@ public class AccueilActivity extends Activity {
                     timer.start();
                     findViewById(R.id.timer).setVisibility(View.VISIBLE);
                     button.setVisibility(View.INVISIBLE);
+                    partage.setVisibility(View.INVISIBLE);
                     etat = EN_COURS;
                     chargerWebView();
 
@@ -121,7 +126,7 @@ public class AccueilActivity extends Activity {
             });
 
 
-            Button partage  = (Button) findViewById(R.id.partageId);
+
             partage.setOnClickListener(new View.OnClickListener() {
 
                 @Override
