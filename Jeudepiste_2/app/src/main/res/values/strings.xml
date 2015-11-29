@@ -15,4 +15,8 @@
     <string name="bouton_photo">Prendre une photo</string>
     <string name="bouton_retour">Retour</string>
     <string name="bouton_repondre">Répondre</string>
+    <string name="pairedButton">Paired</string>
+    <string name="searchButton">Search device</string>
+    <string name="offButton">OFF</string>
+    <string name="onButton">ON</string>
 </resources>

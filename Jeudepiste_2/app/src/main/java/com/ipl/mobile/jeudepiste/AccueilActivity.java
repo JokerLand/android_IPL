@@ -114,6 +114,18 @@ public class AccueilActivity extends Activity {
 
                 }
             });
+
+
+            Button partage  = (Button) findViewById(R.id.partageId);
+            partage.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    partageScore();
+                }
+            });
+
+
         }
 
         webview.setWebViewClient(new WebViewClient() {
@@ -435,6 +447,11 @@ public class AccueilActivity extends Activity {
             // other 'case' lines to check for other
             // permissions this app might request
         }
+    }
+
+    public void partageScore() {
+        Intent intent = new Intent(AccueilActivity.this, Partage.class);
+        startActivity(intent);
     }
 
 

@@ -64,5 +64,16 @@
         android:visibility="invisible"
         android:text="@string/bouton_recommencer"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Partager"
+        android:id="@+id/partageId"
+        android:layout_alignBottom="@+id/recommencer"
+        android:layout_centerHorizontal="true"
+        android:nestedScrollingEnabled="false"
+        android:onClick="partageScore"
+        android:enabled="true" />
+
 
 </RelativeLayout>
