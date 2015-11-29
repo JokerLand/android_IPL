@@ -125,23 +125,39 @@ public class AccueilActivity extends Activity {
             @Override
             public void onLoadResource(WebView view, String url) {
 
-                if (url.equals(myXml.getEpreuvePreference().get(Util.uri) + "/")) {
+                if(url.contains("epreuve" + settings.getInt(Util.epreuve, 1))) {
                     Intent intent = new Intent(AccueilActivity.this, EpreuveActivity.class);
                     startActivity(intent);
+                } else {
+                    System.out.println("url 14 : " + url.charAt(14));
+                    int numEpreuveVoulue = Integer.parseInt("" + url.charAt(14));
+                    int numEpreuveAFaire = settings.getInt(Util.epreuve, 1);
+
+                    String texte;
+                    if (numEpreuveVoulue > numEpreuveAFaire)
+                        texte = "Vous devez faire les epreuves precedentes avant de faire celle ci.";
+                    else
+                        texte = "Vous avez deja fait cet épreuve. Vous ne pouvez pas la recommencer.";
+
+                    Toast.makeText(getApplicationContext(), texte, Toast.LENGTH_SHORT).show();
                 }
 
+                webview.loadUrl((String) myXml.getEtape(settings.getInt(Util.etape, 1)).get(Util.url));
             }
         });
 
         final TextView timerText = (TextView) findViewById(R.id.timer);
 
-        CountDownTimer timer = new CountDownTimer(Util.TWO_MINUTES / 12, Util.ONE_SECOND) { //TODO a changer mettre 1h au lieu de 1min //settings.getLong("time", Util.ONE_HOUR);
+        CountDownTimer timer = new CountDownTimer(settings.getLong(Util.time, Util.ONE_HOUR), Util.ONE_SECOND) { //TODO a changer mettre 1h au lieu de 1min //settings.getLong("time", Util.ONE_HOUR);
 
             @Override
             public void onTick(long millisUntilFinished) {
-                timerText.setText("" + (millisUntilFinished / 1000));
+                long sec = millisUntilFinished/1000;
+                long min = sec / 60;
+                sec = sec % 60;
+                timerText.setText("Il vous reste " + min + "minutes " + sec +"secondes avant la fin du jeu");
                 SharedPreferences.Editor ed = settings.edit();
-                ed.putLong("time", millisUntilFinished);
+                ed.putLong(Util.time, millisUntilFinished);
                 ed.commit();
             }
 
@@ -293,7 +309,15 @@ public class AccueilActivity extends Activity {
             webview.setVisibility(View.INVISIBLE);
             TextView zone = (TextView) findViewById(R.id.textViewZone);
             zone.setVisibility(View.VISIBLE);
-            zone.setText("Vous avez fini ! Bravo ! Votre score final est de " + settings.getInt(Util.score,0));
+
+            long time  = settings.getLong(Util.time, Util.ONE_HOUR);
+            time = Util.ONE_HOUR - time;
+            time /= 1000;
+
+            long min = time / 60;
+            long sec = time % 60;
+
+            zone.setText("Vous avez fini ! Bravo ! Votre score final est de " + settings.getFloat(Util.score,0) + ". Vous avez mis " + min +"minutes " + sec +"secondes pour finir le jeu");
         }
         verifLocation();
     }

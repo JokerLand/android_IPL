@@ -48,9 +48,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/timer"
         android:text="ici le timer"
-        android:layout_above="@+id/textViewZone"
         android:layout_alignTop="@+id/webviewAccueil"
-        android:layout_toRightOf="@+id/button" />
+        android:layout_alignRight="@+id/webviewAccueil"
+        android:layout_alignEnd="@+id/webviewAccueil"
+        android:layout_toRightOf="@+id/idTitre"
+        android:layout_toEndOf="@+id/idTitre"
+        android:layout_alignBottom="@+id/textViewZone" />
 
 
 </RelativeLayout>

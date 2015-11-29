@@ -27,6 +27,7 @@ public class Util {
     public final static String photo = "Photo";
     public final static String texte = "Texte";
 
+    public final static String time = "time";
     public final static String nombreEpreuves  = "nombreEpreuves";
     public final static String nombreEtapes = "nombreEtapes";
     public final static String num = "num";
