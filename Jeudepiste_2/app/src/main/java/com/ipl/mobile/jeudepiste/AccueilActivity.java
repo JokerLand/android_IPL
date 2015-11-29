@@ -186,6 +186,9 @@ public class AccueilActivity extends Activity {
                 Button b = (Button) findViewById(R.id.button);
                 b.setVisibility(View.VISIBLE);
 
+                Button part = (Button) findViewById(R.id.partageId);
+                part.setVisibility(View.VISIBLE);
+
                 TextView zone = (TextView) findViewById(R.id.textViewZone);
                 zone.setVisibility(View.INVISIBLE);
                 Button boutonRecommencer = (Button) findViewById(R.id.recommencer);
@@ -244,7 +247,7 @@ public class AccueilActivity extends Activity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for Activity#requestPermissions for more details.
-            Toast.makeText(AccueilActivity.this, "Meeeeeerdeeeuuux", Toast.LENGTH_LONG).show(); //TODO message erreur correct
+            Toast.makeText(AccueilActivity.this, R.string.app_geo_erreur_permission, Toast.LENGTH_LONG).show(); //TODO message erreur correct
 
 
             // Should we show an explanation?
@@ -254,10 +257,10 @@ public class AccueilActivity extends Activity {
                 // Show an expanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-               /* ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);*/
-                Toast.makeText(AccueilActivity.this, "Bouuuuhhhh", Toast.LENGTH_LONG).show(); //TODO message erreur correct
+                        MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+                Toast.makeText(AccueilActivity.this, R.string.app_geo_erreur_permission, Toast.LENGTH_LONG).show(); //TODO message erreur correct
             } else {
 
                 // No explanation needed, we can request the permission.
